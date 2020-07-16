@@ -1,12 +1,14 @@
-i3-xkb-switcher
+sway-xkb-switcher
 ===============
 
 ## Description
 
-This app records keyboard layout for a i3 windows when you leave them.
+This app records keyboard layout for a sway windows when you leave them.
 And when you come back it is restore keyboard layout.
 
-## Install
+This project is under construction yet.
+
+## Install not ready yet
 
 ```bash
 $ pip install i3-xkb-switcher
@@ -17,7 +19,7 @@ Also you can download compiled binary from [release page](https://github.com/inn
 ## Usage
 
 ```bash
-$ i3-xkb-switcher
+$ sway-xkb-switcher
 ```
 
 To enable debug mode run with `--debug` key.
