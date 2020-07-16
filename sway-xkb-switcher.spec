@@ -37,9 +37,9 @@ def Entrypoint(dist, group, name, **kwargs):
 
 
 a = Entrypoint(
-    "i3-xkb-switcher",
+    "sway-xkb-switcher",
     "console_scripts",
-    "i3-xkb-switcher",
+    "sway-xkb-switcher",
     binaries=[],
     datas=[],
     hiddenimports=[],
@@ -59,7 +59,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name="i3-xkb-switcher",
+    name="sway-xkb-switcher",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -136,7 +136,7 @@ def main():
         return
 
     # try lock process
-    path = os.path.join(gettempdir(), "i3-xkb-switcher.lock")
+    path = os.path.join(gettempdir(), "sway-xkb-switcher.lock")
 
     try:
         fd = os.open(path, os.O_CREAT | os.O_WRONLY | os.O_EXCL)

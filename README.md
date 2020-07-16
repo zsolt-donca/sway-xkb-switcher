@@ -6,15 +6,18 @@ sway-xkb-switcher
 This app records keyboard layout for a sway windows when you leave them.
 And when you come back it is restore keyboard layout.
 
+This project is forked from https://github.com/inn0kenty/i3-xkb-switcher
+and adapted to work with sway window manager.
+
 This project is under construction yet.
 
 ## Install not ready yet
 
 ```bash
-$ pip install i3-xkb-switcher
+$ pip install sway-xkb-switcher
 ```
 
-Also you can download compiled binary from [release page](https://github.com/inn0kenty/i3-xkb-switcher/releases).
+Also you can download compiled binary from [release page](https://github.com/nmukhachev/sway-xkb-switcher/releases).
 
 ## Usage
 
