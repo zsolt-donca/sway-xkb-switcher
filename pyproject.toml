@@ -10,7 +10,6 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 i3ipc = "^2.1.1"
-xkbgroup = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.750"
