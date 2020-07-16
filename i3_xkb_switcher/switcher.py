@@ -4,37 +4,40 @@ import atexit
 import logging
 import os
 from tempfile import gettempdir
+from typing import List
 
 from i3ipc import Event
 from i3ipc.aio import Connection
 from i3ipc.events import WindowEvent
+from i3ipc.replies import InputReply
 
-from xkbgroup import XKeyboard
-
-from . import __version__
-
+__version__ = "0.2.1"
 
 class State:
-    def __init__(self):
+    def __init__(self, conn: Connection, inputs: List[InputReply], input_identifier: str):
         self._last_id = -1
         self._lang_state = {}
-        self._xkb = XKeyboard()
+        self._connection = conn
+        self._input_identifier = input_identifier
+        for index, sway_input in enumerate(inputs):
+            if sway_input.identifier == self._input_identifier:
+                self._input_index = index
 
-    def window_focus(self, _: Connection, event: WindowEvent):
+    async def window_focus(self, _: Connection, event: WindowEvent):
         current_id = event.container.id
         logging.debug("Window focus, id %d", current_id)
 
         if self._last_id == current_id:
             return
-
-        current_lang = self._get_lang()
+        
+        current_lang = await self._get_lang()
 
         if self._last_id > 0:
             self._lang_state[self._last_id] = current_lang
 
         lang = self._lang_state.get(current_id, current_lang)
 
-        self._set_lang(lang)
+        await self._set_lang(lang)
 
         self._last_id = current_id
 
@@ -51,16 +54,21 @@ class State:
         finally:
             self._last_id = -1
 
-    def _set_lang(self, lang: str):
-        self._xkb.group_symbol = lang
+    async def _set_lang(self, lang: int):
+        await self._connection.command(
+            f"input {self._input_identifier} xkb_switch_layout {lang}"
+        )
 
-    def _get_lang(self) -> str:
-        return self._xkb.group_symbol
+    async def _get_lang(self) -> int:
+        inputs = await self._connection.get_inputs()
+        return inputs[self._input_index].xkb_active_layout_index
 
 
-async def _entrypoint():
+async def _entrypoint(input_identifier: str):
     conn = await Connection(auto_reconnect=True).connect()
-    st = State()
+    inputs = await conn.get_inputs()
+
+    st = State(conn, inputs, input_identifier)
 
     conn.on(Event.WINDOW_FOCUS, st.window_focus)
     conn.on(Event.WINDOW_CLOSE, st.window_close)
@@ -95,6 +103,12 @@ def _parse_args():
         const=True,
         default=False,
         help="run in background (default: false)",
+    )
+    parser.add_argument(
+        "--input-identifier", "-i",
+        action="store",
+        default="1:1:AT_Translated_Set_2_keyboard",
+        help="keyboard identifier from output of swaymsg -t get_inputs"
     )
 
     return parser.parse_known_args()[0]
@@ -146,12 +160,12 @@ def main():
 
     atexit.register(_cleanup)
     os.write(fd, str(os.getpid()).encode())
-    _start()
+    _start(args.input_identifier)
 
 
-def _start():
+def _start(input_identifier):
     try:
-        asyncio.get_event_loop().run_until_complete(_entrypoint())
+        asyncio.get_event_loop().run_until_complete(_entrypoint(input_identifier))
     except KeyboardInterrupt:
         logging.debug("shutdown")
 
