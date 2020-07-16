@@ -27,12 +27,12 @@ jobs:
       - name: Build python and binary
         run: |
           poetry build
-          poetry run pyinstaller i3-xkb-switcher.spec
-          upx dist/i3-xkb-switcher
+          poetry run pyinstaller sway-xkb-switcher.spec
+          upx dist/sway-xkb-switcher
       - name: Calculate binary hash
         run: |
           cd dist
-          sha256sum i3-xkb-switcher > sha256sum.txt
+          sha256sum sway-xkb-switcher > sha256sum.txt
       - name: Publish to pypi
         run: |
           poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
@@ -42,6 +42,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ./dist/i3-xkb-switcher
+            ./dist/sway-xkb-switcher
             ./dist/sha256sum.txt
           gzip: false
