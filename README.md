@@ -11,7 +11,7 @@ and adapted to work with sway window manager.
 
 This project is under construction yet.
 
-## Install not ready yet
+## Install
 
 ```bash
 $ pip install sway-xkb-switcher
@@ -22,8 +22,15 @@ Also you can download compiled binary from [release page](https://github.com/nmu
 ## Usage
 
 ```bash
-$ sway-xkb-switcher
+$ sway-xkb-switcher --input-identifier <identifier>
 ```
+
+You can view a list of actual identifiers by looking at
+
+```bash
+$ swaymsg -t get_inputs | grep identifier
+```
+The identifier corresponds to that from the input section of your sway config.
 
 To enable debug mode run with `--debug` key.
 
