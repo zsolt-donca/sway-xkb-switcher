@@ -2,7 +2,8 @@
 name = "sway-xkb-switcher"
 version = "0.2.1"
 description = "Keyboard layout switcher for sway windows"
-authors = ["Innokenty Lebedev", "Nikolay Mukhachev"]
+authors = ["Innokenty Lebedev", "Nikolay Mukhachev", "Peter Mukhachev"]
+maintainers = ["Nikolay Mukhachev"]
 repository = "https://github.com/nmukhachev/sway-xkb-switcher"
 readme = "README.md"
 license = "MIT"
