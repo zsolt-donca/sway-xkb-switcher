@@ -13,7 +13,7 @@ from i3ipc.aio import Connection
 from i3ipc.events import WindowEvent
 from i3ipc.replies import InputReply
 
-__version__ = "0.2.1"
+__version__ = "0.2.3"
 
 class State:
     def __init__(self, conn: Connection, inputs: List[InputReply], input_identifier: str):
