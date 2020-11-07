@@ -25,23 +25,8 @@ jobs:
           poetry config virtualenvs.in-project true
           poetry install --no-interaction
       - name: Build python and binary
-        run: |
-          poetry build
-          poetry run pyinstaller sway-xkb-switcher.spec
-          upx dist/sway-xkb-switcher
-      - name: Calculate binary hash
-        run: |
-          cd dist
-          sha256sum sway-xkb-switcher > sha256sum.txt
+        run: poetry build
       - name: Publish to pypi
         run: |
           poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
           poetry publish
-      - name: Create Github release
-        uses: meeDamian/github-release@1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            ./dist/sway-xkb-switcher
-            ./dist/sha256sum.txt
-          gzip: false
