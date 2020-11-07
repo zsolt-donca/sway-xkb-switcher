@@ -7,6 +7,10 @@ maintainers = ["Nikolay Mukhachev"]
 repository = "https://github.com/nmukhachev/sway-xkb-switcher"
 readme = "README.md"
 license = "MIT"
+packages = [
+         { include = "sway_xkb_switcher"},
+         { include = "emacs_sway_xkb"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -29,7 +33,8 @@ bump2version = "^0.5.11"
 pyinstaller = "^3.5"
 
 [tool.poetry.scripts]
-sway-xkb-switcher = 'sway_xkb_switcher.switcher:main'
+sway-xkb-switcher = "sway_xkb_switcher.switcher:main"
+emacs-sway-xkb = "emacs_sway_xkb.emacs_sway_xkb:main"
 
 [build-system]
 requires = ["poetry>=0.12"]
