@@ -112,6 +112,12 @@ def _parse_args():
         default="1:1:AT_Translated_Set_2_keyboard",
         help="keyboard identifier from output of swaymsg -t get_inputs"
     )
+    parser.add_argument(
+        "--default-lang", "-D",
+        action="store",
+        default=None,
+        help="default keyboard layout for new windows"
+    )
 
     return parser.parse_known_args()[0]
 
