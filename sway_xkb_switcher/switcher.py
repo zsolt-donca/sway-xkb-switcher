@@ -16,7 +16,7 @@ from i3ipc.replies import InputReply
 __version__ = "0.2.4"
 
 class State:
-    def __init__(self, conn: Connection, inputs: List[InputReply], input_identifier: str):
+    def __init__(self, conn: Connection, inputs: List[InputReply], input_identifier: str, default_lang: str):
         self._last_id = -1
         self._lang_state = {}
         self._connection = conn
@@ -66,11 +66,11 @@ class State:
         return inputs[self._input_index].xkb_active_layout_index
 
 
-async def _entrypoint(input_identifier: str):
+async def _entrypoint(input_identifier: str, default_lang: str):
     conn = await Connection(auto_reconnect=True).connect()
     inputs = await conn.get_inputs()
 
-    st = State(conn, inputs, input_identifier)
+    st = State(conn, inputs, input_identifier, default_lang)
 
     conn.on(Event.WINDOW_FOCUS, st.window_focus)
     conn.on(Event.WINDOW_CLOSE, st.window_close)
@@ -168,12 +168,12 @@ def main():
 
     atexit.register(_cleanup)
     os.write(fd, str(os.getpid()).encode())
-    _start(args.input_identifier)
+    _start(args.input_identifier, args.default_lang)
 
 
-def _start(input_identifier):
+def _start(input_identifier, default_lang):
     try:
-        asyncio.get_event_loop().run_until_complete(_entrypoint(input_identifier))
+        asyncio.get_event_loop().run_until_complete(_entrypoint(input_identifier, default_lang))
     except KeyboardInterrupt:
         logging.debug("shutdown")
 
