@@ -45,7 +45,12 @@ class State:
         if self._last_id > 0:
             self._lang_state[self._last_id] = current_lang
 
-        lang = self._lang_state.get(current_id, current_lang)
+        if self._default_lang is None:
+            default_lang = current_lang
+        else:
+            default_lang = self._default_lang
+
+        lang = self._lang_state.get(current_id, default_lang)
 
         await self._set_lang(lang)
 
