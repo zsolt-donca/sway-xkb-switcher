@@ -16,14 +16,22 @@ from i3ipc.replies import InputReply
 __version__ = "0.2.4"
 
 class State:
-    def __init__(self, conn: Connection, inputs: List[InputReply], input_identifier: str):
+    def __init__(self, conn: Connection, inputs: List[InputReply], input_identifier: str, default_lang: str):
         self._last_id = -1
         self._lang_state = {}
         self._connection = conn
         self._input_identifier = input_identifier
+
         for index, sway_input in enumerate(inputs):
             if sway_input.identifier == self._input_identifier:
                 self._input_index = index
+
+        if default_lang is None:
+            self._default_lang = None
+        else:
+            for index, lang in enumerate(inputs[self._input_index].xkb_layout_names):
+                if lang == default_lang:
+                    self._default_lang = index
 
     async def window_focus(self, _: Connection, event: WindowEvent):
         current_id = event.container.id
@@ -37,7 +45,12 @@ class State:
         if self._last_id > 0:
             self._lang_state[self._last_id] = current_lang
 
-        lang = self._lang_state.get(current_id, current_lang)
+        if self._default_lang is None:
+            default_lang = current_lang
+        else:
+            default_lang = self._default_lang
+
+        lang = self._lang_state.get(current_id, default_lang)
 
         await self._set_lang(lang)
 
@@ -66,11 +79,11 @@ class State:
         return inputs[self._input_index].xkb_active_layout_index
 
 
-async def _entrypoint(input_identifier: str):
+async def _entrypoint(input_identifier: str, default_lang: str):
     conn = await Connection(auto_reconnect=True).connect()
     inputs = await conn.get_inputs()
 
-    st = State(conn, inputs, input_identifier)
+    st = State(conn, inputs, input_identifier, default_lang)
 
     conn.on(Event.WINDOW_FOCUS, st.window_focus)
     conn.on(Event.WINDOW_CLOSE, st.window_close)
@@ -112,13 +125,20 @@ def _parse_args():
         default="1:1:AT_Translated_Set_2_keyboard",
         help="keyboard identifier from output of swaymsg -t get_inputs"
     )
+    parser.add_argument(
+        "--default-lang", "-D",
+        action="store",
+        default=None,
+        help="default keyboard layout for new windows"
+    )
 
     return parser.parse_known_args()[0]
 
 
 def _build_log_config(args):
     basic_cfg = dict(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%I:%M:%S",
         level=logging.DEBUG if args.debug else logging.CRITICAL,
     )
 
@@ -162,12 +182,12 @@ def main():
 
     atexit.register(_cleanup)
     os.write(fd, str(os.getpid()).encode())
-    _start(args.input_identifier)
+    _start(args.input_identifier, args.default_lang)
 
 
-def _start(input_identifier):
+def _start(input_identifier, default_lang):
     try:
-        asyncio.get_event_loop().run_until_complete(_entrypoint(input_identifier))
+        asyncio.get_event_loop().run_until_complete(_entrypoint(input_identifier, default_lang))
     except KeyboardInterrupt:
         logging.debug("shutdown")
 
