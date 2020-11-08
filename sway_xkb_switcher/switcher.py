@@ -21,9 +21,17 @@ class State:
         self._lang_state = {}
         self._connection = conn
         self._input_identifier = input_identifier
+
         for index, sway_input in enumerate(inputs):
             if sway_input.identifier == self._input_identifier:
                 self._input_index = index
+
+        if default_lang is None:
+            self._default_lang = None
+        else:
+            for index, lang in enumerate(inputs[self._input_index].xkb_layout_names):
+                if lang == default_lang:
+                    self._default_lang = index
 
     async def window_focus(self, _: Connection, event: WindowEvent):
         current_id = event.container.id
